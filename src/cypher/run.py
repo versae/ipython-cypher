@@ -78,6 +78,7 @@ class ResultSet(list, ColumnGuesserMixin):
     Can access rows listwise, or by string value of leftmost column.
     """
     def __init__(self, results, query, config):
+        self._results = results
         self.keys = results.columns
         self.query = query
         self.config = config
@@ -261,7 +262,8 @@ def run(conn, query, config, user_namespace):
     if query.strip():
         # TODO: Handle multiple queries
         params = extract_params_from_query(query, user_namespace)
-        result = conn.session.query(query, params)
+        result = conn.session.query(query, params,
+                                    data_contents=config.data_contents)
         if result and config.feedback:
             print(interpret_rowcount(len(result)))
         resultset = ResultSet(result, query, config)
