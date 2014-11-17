@@ -1,8 +1,22 @@
-import operator
-import csv
 import codecs
-import os.path
+from collections import defaultdict
+import csv
+import json
 import prettytable
+import operator
+import os.path
+try:
+    import matplotlib.pylab as plt
+except:
+    plt = None
+try:
+    import networkx as nx
+except ImportError:
+    nx = None
+try:
+    import pandas as pd
+except ImportError:
+    pd = None
 
 from cypher.column_guesser import ColumnGuesserMixin
 from cypher.utils import StringIO
@@ -79,21 +93,27 @@ class ResultSet(list, ColumnGuesserMixin):
     """
     def __init__(self, results, query, config):
         self._results = results
+        self._labels = defaultdict(int)
+        self._types = defaultdict(int)
         self.keys = results.columns
         self.query = query
         self.config = config
-        self.limit = config.autolimit
+        self.limit = config.auto_limit
         style_name = config.style
         self.style = prettytable.__dict__[style_name.upper()]
         if len(results) > 0:
-            if self.limit:
-                list.__init__(self, results[:self.limit])
+            if not config.rest:
+                _results = results.rows
             else:
-                list.__init__(self, results)
+                _results = results
+            if self.limit:
+                list.__init__(self, _results[:self.limit])
+            else:
+                list.__init__(self, _results)
             self.field_names = unduplicate_field_names(self.keys)
             self.pretty = prettytable.PrettyTable(self.field_names)
-            if not config.autopandas:
-                for row in self[:config.displaylimit or None]:
+            if not config.auto_pandas:
+                for row in self[:config.display_limit or None]:
                     self.pretty.add_row(row)
             self.pretty.set_style(self.style)
         else:
@@ -101,14 +121,16 @@ class ResultSet(list, ColumnGuesserMixin):
             self.pretty = None
 
     def _repr_html_(self):
-        if self.pretty:
+        if self.config.auto_html:
+            return self._results._repr_html_()
+        elif self.pretty:
             result = self.pretty.get_html_string()
-            if (self.config.displaylimit
-                    and len(self) > self.config.displaylimit):
+            if (self.config.display_limit
+                    and len(self) > self.config.display_limit):
                 result = """
                 %s\n<span style="font-style:italic;text-align:center;">%d rows,
                 truncated to displaylimit of %d</span>""" % (
-                    result, len(self), self.config.displaylimit
+                    result, len(self), self.config.display_limit
                 )
             return result
         else:
@@ -134,9 +156,74 @@ class ResultSet(list, ColumnGuesserMixin):
 
     def dataframe(self):
         "Returns a Pandas DataFrame instance built from the result set."
-        import pandas as pd
+        if pd is None:
+            raise ImportError("Try installing Pandas first.")
         frame = pd.DataFrame(self[:], columns=(self and self.keys) or [])
         return frame
+
+    def graph(self, directed=True):
+        "Returns a NetworkX multi-graph instance built from the result set"
+        if nx is None:
+            raise ImportError("Try installing NetworkX first.")
+        if directed:
+            graph = nx.MultiDiGraph()
+        else:
+            graph = nx.MultiGraph()
+        for item in self._results.graph:
+            for node in item['nodes']:
+                graph.add_node(node['id'], node['properties'],
+                               labels=node['labels'])
+            for rel in item['relationships']:
+                graph.add_edge(rel['startNode'], rel['endNode'], rel['id'],
+                               rel['properties'], type=rel['type'])
+        return graph
+
+    def draw(self, directed=True, layout="spring",
+              node_label_attr=None, show_node_labels=True,
+              edge_label_attr=None, show_edge_labels=True,
+              node_size=1600, node_color='blue', node_alpha=0.3,
+              node_text_size=12,
+              edge_color='blue', edge_alpha=0.3, edge_tickness=1,
+              edge_text_pos=0.3,
+              text_font='sans-serif'):
+        "Plot of a NetworkX multi-graph instance"
+        graph = self.graph(directed=directed)
+        pos = getattr(nx, "{}_layout".format(layout))(graph)
+        node_labels = {}
+        edge_labels = {}
+        node_colors = set()
+        if show_node_labels:
+            for node, props in graph.nodes(data=True):
+                labels = props.pop('labels', [])
+                (node_colors.add(label) for label in labels)
+                if node_label_attr is None:
+                    node_labels[node] = "$:{}$\n{}".format(
+                        ":".join(labels),
+                        props.values()[0] if props else "",
+                    )
+                else:
+                    props_list = ["{}: {}".format(k, v)
+                                  for k, v in props.items()]
+                    node_labels[node] = "$:{}$\n{}".format(
+                        ":".join(labels), "\n".join(props_list)
+                    )
+        node_colors = range(1, len(node_colors) + 1)
+        if show_edge_labels:
+            for start, end, props in graph.edges(data=True):
+                if edge_label_attr is None:
+                    edge_label = props.get("type", '')
+                else:
+                    edge_label = props.get(edge_label_attr, '')
+                edge_labels[(start, end)] = edge_label
+        nx.draw_networkx_nodes(graph, pos=pos, node_color=node_colors,
+                               node_size=node_size, alpha=node_alpha),
+        nx.draw_networkx_labels(graph, pos=pos, labels=node_labels,
+                                font_size=node_text_size,
+                                font_family=text_font)
+        nx.draw_networkx_edges(graph, pos=pos, width=edge_tickness,
+                               alpha=edge_alpha,edge_color=edge_color),
+        nx.draw_networkx_edge_labels(graph, pos=pos, edge_labels=edge_labels),
+        return graph
 
     def pie(self, key_word_sep=" ", title=None, **kwargs):
         """Generates a pylab pie chart from the result set.
@@ -159,8 +246,9 @@ class ResultSet(list, ColumnGuesserMixin):
         Any additional keyword arguments will be passsed
         through to ``matplotlib.pylab.pie``.
         """
+        if not plt:
+            raise ImportError("Try installing matplotlib first.")
         self.guess_pie_columns(xlabel_sep=key_word_sep)
-        import matplotlib.pylab as plt
         pie = plt.pie(self.ys[0], labels=self.xlabels, **kwargs)
         plt.title(title or self.ys[0].name)
         return pie
@@ -183,7 +271,8 @@ class ResultSet(list, ColumnGuesserMixin):
         Any additional keyword arguments will be passsed
         through to ``matplotlib.pylab.plot``.
         """
-        import matplotlib.pylab as plt
+        if not plt:
+            raise ImportError("Try installing matplotlib first.")
         self.guess_plot_columns()
         self.x = self.x or range(len(self.ys[0]))
         coords = reduce(operator.add, [(self.x, y) for y in self.ys])
@@ -215,7 +304,8 @@ class ResultSet(list, ColumnGuesserMixin):
         Any additional keyword arguments will be passsed
         through to ``matplotlib.pylab.bar``.
         """
-        import matplotlib.pylab as plt
+        if not plt:
+            raise ImportError("Try installing matplotlib first.")
         self.guess_pie_columns(xlabel_sep=key_word_sep)
         plot = plt.bar(range(len(self.ys[0])), self.ys[0], **kwargs)
         if self.xlabels:
@@ -245,17 +335,30 @@ class ResultSet(list, ColumnGuesserMixin):
             return outfile.getvalue()
 
 
-def interpret_rowcount(rowcount):
-    if rowcount < 0:
-        result = 'Done.'
+def interpret_stats(results):
+    stats = results.stats
+    contains_updates = stats.pop("contains_updates", False)
+    if not contains_updates:
+        result = '{} rows affected.'.format(len(results))
     else:
-        result = '%d rows affected.' % rowcount
-    return result
+        result = ''
+        for stat, value in stats.iteritems():
+            if value:
+                result = "{}\n{} {}.".format(result, value,
+                                             stat.replace("_", " "))
+    return result.strip()
 
 
 def extract_params_from_query(query, user_ns):
-    # TODO
-    return {}
+    # TODO: Optmize this function
+    params = {}
+    for k, v in user_ns.iteritems():
+        try:
+            json.dumps(v)
+            params[k] = v
+        except:
+            pass
+    return params
 
 
 def run(conn, query, config, user_namespace):
@@ -264,11 +367,15 @@ def run(conn, query, config, user_namespace):
         params = extract_params_from_query(query, user_namespace)
         result = conn.session.query(query, params,
                                     data_contents=config.data_contents)
-        if result and config.feedback:
-            print(interpret_rowcount(len(result)))
+        if config.feedback:
+            print(interpret_stats(result))
         resultset = ResultSet(result, query, config)
-        if config.autopandas:
+        if config.auto_pandas:
             return resultset.dataframe()
+        elif config.auto_networkx:
+            graph = resultset.graph()
+            resultset.draw()
+            return graph
         else:
             return resultset
         #returning only last result, intentionally

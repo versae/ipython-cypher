@@ -1,8 +1,6 @@
 
 
 def parse(cell, config):
-    opts, cell = config.parse_options(cell, '')
-
     uri = 'http://localhost:7474/db/data/'
     parts = [part.strip() for part in cell.split(None, 1)]
     if not parts:

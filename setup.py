@@ -9,10 +9,9 @@ NEWS = open(os.path.join(here, 'NEWS.txt')).read()
 version = '0.1.0'
 
 install_requires = [
-    "neo4jrestclient",
+    "neo4jrestclient>=2.1.1",
     'prettytable',
     'ipython>=1.0',
-    'six',
 ]
 
 

@@ -23,12 +23,35 @@ class CypherMagic(Magics, Configurable):
 
     Provides the %%cypher magic."""
 
-    autolimit = Int(0, config=True, help="Automatically limit the size of the returned result sets")
-    style = Unicode('DEFAULT', config=True, help="Set the table printing style to any of prettytable's defined styles (currently DEFAULT, MSWORD_FRIENDLY, PLAIN_COLUMNS, RANDOM)")
-    short_errors = Bool(True, config=True, help="Don't display the full traceback on Neo4j errors")
-    data_contents = Bool(True, config=True, help="Bring extra data to render the results as a graph")
-    displaylimit = Int(0, config=True, help="Automatically limit the number of rows displayed (full result set is still stored)")
-    autopandas = Bool(False, config=True, help="Return Pandas DataFrames instead of regular result sets")
+    auto_limit = Int(0, config=True, help="""
+        Automatically limit the size of the returned result sets
+    """)
+    style = Unicode('DEFAULT', config=True, help="""
+        Set the table printing style to any of prettytable's defined styles
+        (currently DEFAULT, MSWORD_FRIENDLY, PLAIN_COLUMNS, RANDOM)
+    """)
+    short_errors = Bool(True, config=True, help="""
+        Don't display the full traceback on Neo4j errors
+    """)
+    data_contents = Bool(True, config=True, help="""
+        Bring extra data to render the results as a graph
+    """)
+    display_limit = Int(0, config=True, help="""
+        Automatically limit the number of rows displayed
+        (full result set is still stored)
+    """)
+    auto_pandas = Bool(False, config=True, help="""
+        Return Pandas DataFrame instead of regular result sets
+    """)
+    auto_html = Bool(False, config=True, help="""
+        Return a D3 representation of the graph instead of regular result sets
+    """)
+    auto_networkx = Bool(False, config=True, help="""
+        Return Networkx MultiDiGraph instead of regular result sets
+    """)
+    rest = Bool(False, config=True, help="""
+        Return full REST representations of objects inside the result sets
+    """)
     feedback = Bool(True, config=True, help="Print number of rows affected")
     legal_cypher_identifier = re.compile(r'^[A-Za-z0-9#_$]+')
 
@@ -70,7 +93,7 @@ class CypherMagic(Magics, Configurable):
         # save globals and locals so they can be referenced in bind vars
         user_ns = self.shell.user_ns
         user_ns.update(local_ns)
-        parsed = parse('%s\n%s' % (line, cell), self)
+        parsed = parse("""{0}\n{1}""".format(line, cell), self)
         conn = Connection.get(parsed['uri'])
         first_word = parsed['cypher'].split(None, 1)[:1]
         if first_word and first_word[0].lower() == 'persist':
