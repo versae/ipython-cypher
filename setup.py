@@ -23,7 +23,7 @@ setup(
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Console',
-        'License :: OSI Approved :: GPL',
+        'License :: OSI Approved :: GNU General Public License (GPL)',
         'Topic :: Database',
         'Topic :: Database :: Front-Ends',
         'Programming Language :: Python :: 3',
