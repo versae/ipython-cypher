@@ -7,8 +7,12 @@ import operator
 import os.path
 try:
     import matplotlib.pylab as plt
+    import matplotlib.patches as mpatches
+    import matplotlib.lines as Line2D
 except:
     plt = None
+    mpatches = None
+    Line2D = None
 try:
     import networkx as nx
 except ImportError:
@@ -185,7 +189,7 @@ class ResultSet(list, ColumnGuesserMixin):
               node_text_size=12,
               edge_color='blue', edge_alpha=0.3, edge_tickness=1,
               edge_text_pos=0.3,
-              text_font='sans-serif'):
+              text_font='sans-serif', ax=None):
         "Plot of a NetworkX multi-graph instance"
         graph = self.graph(directed=directed)
         pos = getattr(nx, "{}_layout".format(layout))(graph)
@@ -195,7 +199,8 @@ class ResultSet(list, ColumnGuesserMixin):
         if show_node_labels:
             for node, props in graph.nodes(data=True):
                 labels = props.pop('labels', [])
-                (node_colors.add(label) for label in labels)
+                for label in labels:
+                    node_colors.add(label)
                 if node_label_attr is None:
                     node_labels[node] = "$:{}$\n{}".format(
                         ":".join(labels),
@@ -207,7 +212,13 @@ class ResultSet(list, ColumnGuesserMixin):
                     node_labels[node] = "$:{}$\n{}".format(
                         ":".join(labels), "\n".join(props_list)
                     )
-        node_colors = range(1, len(node_colors) + 1)
+        node_color = []
+        node_colors = list(node_colors)
+        legend_colors = []
+        colors = plt.matplotlib.colors.ColorConverter().cache.items()
+        for color_name, color_rgb in colors[:len(node_colors)]:
+            node_color.append(color_rgb)
+            legend_colors.append(color_name)
         if show_edge_labels:
             for start, end, props in graph.edges(data=True):
                 if edge_label_attr is None:
@@ -215,15 +226,28 @@ class ResultSet(list, ColumnGuesserMixin):
                 else:
                     edge_label = props.get(edge_label_attr, '')
                 edge_labels[(start, end)] = edge_label
-        nx.draw_networkx_nodes(graph, pos=pos, node_color=node_colors,
-                               node_size=node_size, alpha=node_alpha),
+        if not ax:
+            fig = plt.figure()
+            ax = fig.add_subplot(111)
+        nodes = nx.draw_networkx_nodes(graph, pos=pos, node_color=node_color,
+                               node_size=node_size, alpha=node_alpha,
+                               ax=ax)
         nx.draw_networkx_labels(graph, pos=pos, labels=node_labels,
                                 font_size=node_text_size,
-                                font_family=text_font)
+                                font_family=text_font,
+                                ax=ax)
         nx.draw_networkx_edges(graph, pos=pos, width=edge_tickness,
-                               alpha=edge_alpha,edge_color=edge_color),
-        nx.draw_networkx_edge_labels(graph, pos=pos, edge_labels=edge_labels),
-        return graph
+                               alpha=edge_alpha,edge_color=edge_color,
+                               ax=ax)
+        nx.draw_networkx_edge_labels(graph, pos=pos, edge_labels=edge_labels,
+                                     ax=ax)
+        ax.legend([plt.Line2D([0], [0], linestyle="none", marker="o",
+                              alpha=node_alpha,
+                              markersize=10, markerfacecolor=color)
+                   for color in legend_colors],
+                   node_colors, loc=(-0.25, 1), numpoints=1, frameon=False)
+        ax.set_axis_off()
+        return graph, ax, nodes
 
     def pie(self, key_word_sep=" ", title=None, **kwargs):
         """Generates a pylab pie chart from the result set.
