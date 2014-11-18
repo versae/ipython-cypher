@@ -366,7 +366,7 @@ def interpret_stats(results):
         result = '{} rows affected.'.format(len(results))
     else:
         result = ''
-        for stat, value in stats.iteritems():
+        for stat, value in stats.items():
             if value:
                 result = "{}\n{} {}.".format(result, value,
                                              stat.replace("_", " "))
@@ -376,7 +376,7 @@ def interpret_stats(results):
 def extract_params_from_query(query, user_ns):
     # TODO: Optmize this function
     params = {}
-    for k, v in user_ns.iteritems():
+    for k, v in user_ns.items():
         try:
             json.dumps(v)
             params[k] = v
