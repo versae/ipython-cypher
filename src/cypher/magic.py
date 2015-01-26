@@ -53,13 +53,13 @@ class CypherMagic(Magics, Configurable):
         Return full REST representations of objects inside the result sets
     """)
     feedback = Bool(True, config=True, help="Print number of rows affected")
-    legal_cypher_identifier = re.compile(r'^[A-Za-z0-9#_$]+')
 
     def __init__(self, shell):
         Configurable.__init__(self, config=shell.config)
         Magics.__init__(self, shell=shell)
         # Add ourself to the list of module configurable via %config
         self.shell.configurables.append(self)
+        self._legal_cypher_identifier = re.compile(r'^[A-Za-z0-9#_$]+')
 
     @needs_local_scope
     @line_magic('cypher')
@@ -78,10 +78,10 @@ class CypherMagic(Magics, Configurable):
           %%cypher https://me:mypw@myhost:7474/db/data
           START n=node(*) RETURN n
 
-          %%sql me@myhost
+          %%cypher me@myhost
           START n=node(*) RETURN n
 
-          %%sql
+          %%cypher
           START n=node(*) RETURN n
 
         Connect string syntax examples:
@@ -113,7 +113,7 @@ class CypherMagic(Magics, Configurable):
         pieces = raw.split()
         if len(pieces) != 2:
             raise SyntaxError(
-                "Format: %cypher [connection] persist <DataFrameName>"
+                "Format: %%cypher [connection] persist <DataFrameName>"
             )
         frame_name = pieces[1].strip(';')
         frame = eval(frame_name, user_ns)
@@ -122,7 +122,7 @@ class CypherMagic(Magics, Configurable):
                 '%s is not a Pandas DataFrame or Series' % frame_name
             )
         table_name = frame_name.lower()
-        table_name = self.legal_cypher_identifier.search(table_name).group(0)
+        table_name = self._legal_cypher_identifier.search(table_name).group(0)
         frame.to_sql(table_name, conn.session.engine)
         return 'Persisted %s' % table_name
 

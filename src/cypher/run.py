@@ -141,6 +141,7 @@ class ResultSet(list, ColumnGuesserMixin):
             return None
 
     def __str__(self, *arg, **kwarg):
+        """String representation of a ``ResultSet``."""
         return str(self.pretty or '')
 
     def __getitem__(self, key):
@@ -158,15 +159,19 @@ class ResultSet(list, ColumnGuesserMixin):
                 raise KeyError('%d results for "%s"' % (len(result), key))
             return result[0]
 
-    def dataframe(self):
-        "Returns a Pandas DataFrame instance built from the result set."
+    def get_dataframe(self):
+        """Returns a Pandas DataFrame instance built from the result set."""
         if pd is None:
             raise ImportError("Try installing Pandas first.")
         frame = pd.DataFrame(self[:], columns=(self and self.keys) or [])
         return frame
 
-    def graph(self, directed=True):
-        "Returns a NetworkX multi-graph instance built from the result set"
+    def get_graph(self, directed=True):
+        """Returns a NetworkX multi-graph instance built from the result set
+
+        :param directed: boolean, optional (default=`True`).
+            Whether to create a direted or an undirected graph.
+        """
         if nx is None:
             raise ImportError("Try installing NetworkX first.")
         if directed:
@@ -183,14 +188,59 @@ class ResultSet(list, ColumnGuesserMixin):
         return graph
 
     def draw(self, directed=True, layout="spring",
-              node_label_attr=None, show_node_labels=True,
-              edge_label_attr=None, show_edge_labels=True,
-              node_size=1600, node_color='blue', node_alpha=0.3,
-              node_text_size=12,
-              edge_color='blue', edge_alpha=0.3, edge_tickness=1,
-              edge_text_pos=0.3,
-              text_font='sans-serif', ax=None):
-        "Plot of a NetworkX multi-graph instance"
+             node_label_attr=None, show_node_labels=True,
+             edge_label_attr=None, show_edge_labels=True,
+             node_size=1600, node_color='blue', node_alpha=0.3,
+             node_text_size=12,
+             edge_color='blue', edge_alpha=0.3, edge_tickness=1,
+             edge_text_pos=0.3,
+             text_font='sans-serif', ax=None):
+        """Plot of a NetworkX multi-graph instance
+
+        :param directed: boolean, optional (default=`True`).
+            Whether to return a directed graph or not.
+        :param layout: string, optional (default=`"spring"`).
+            Layout to apply. Any of the possible NetworkX layouts will work:
+            ``'circular_layout'``, ``'random_layout'``, ``'shell_layout'``,
+            ``'spring_layout'``, ``'spectral_layout'``,
+            or ``'fruchterman_reingold_layout'``.
+        :param node_label_attr: string, optional (default=`None`).
+            Attribute of the nodes that has to be used as the label.
+        :param show_node_labels: boolean, optional (default=`True`).
+            Whether to show or not the labels of the nodes.
+        :param edge_label_attr: boolean, optional (default=`None`).
+            Attribute of the edges that has to be used as the label.
+        :param show_edge_labels: . optional (default=`True`).
+            Whether to show or not the labels of the edges.
+        :param node_size: integer, optional (default=`1600`).
+            Desired size for nodes.
+        :param node_color: color string, or array of floats, (default=`'blue'`)
+            Node color. Can be a single color format string, or a sequence of
+            colors with the same length as nodelist. If numeric values are
+            specified they will be mapped to colors using the ``cmap`` and
+            ``vmin``, ``vmax`` parameters. See ``matplotlib.scatter`` for more
+            details.
+        :param node_alpha: float, optional (default=`0.3`).
+            Between 0 and 1 for transparency of nodes.
+        :param node_text_size: integer, optional (default=`12`).
+            Size of the node text.
+        :param edge_color: color string, or array of floats (default=`'blue'`)
+            Edge color. Can be a single color format string, or a sequence of
+            colors with the same length as edgelist. If numeric values are
+            specified they will be mapped to colors using the ``edge_cmap`` and
+            ``edge_vmin``, ``edge_vmax`` parameters.
+        :param edge_alpha: float, optional (default=`0.3`)
+            Transparency for thee edges.
+        :param edge_tickness: float or integer, optional (default=`1`).
+            Thickness of the lines drawn for the edges.
+        :param edge_text_pos: . Default to optional (d0)=
+        :param text_font: . Default to optional (default=`'sans-serif'`).
+        :param ax: ``matplotlib.Figure``, optional (default=`None`).
+            A ``matplotlib.Figure`` to use when rendering the graph. If `None`,
+            a new object is created and returned.----
+
+        :return: a ``matplotlib.Figure`` with the graph rendered.
+        """
         graph = self.graph(directed=directed)
         pos = getattr(nx, "{}_layout".format(layout))(graph)
         node_labels = {}
@@ -229,23 +279,31 @@ class ResultSet(list, ColumnGuesserMixin):
         if not ax:
             fig = plt.figure()
             ax = fig.add_subplot(111)
-        nodes = nx.draw_networkx_nodes(graph, pos=pos, node_color=node_color,
-                               node_size=node_size, alpha=node_alpha,
-                               ax=ax)
-        nx.draw_networkx_labels(graph, pos=pos, labels=node_labels,
-                                font_size=node_text_size,
-                                font_family=text_font,
-                                ax=ax)
-        nx.draw_networkx_edges(graph, pos=pos, width=edge_tickness,
-                               alpha=edge_alpha,edge_color=edge_color,
-                               ax=ax)
-        nx.draw_networkx_edge_labels(graph, pos=pos, edge_labels=edge_labels,
-                                     ax=ax)
+        nodes = nx.draw_networkx_nodes(
+            graph, pos=pos, node_color=node_color,
+            node_size=node_size, alpha=node_alpha,
+            ax=ax
+        )
+        nx.draw_networkx_labels(
+            graph, pos=pos, labels=node_labels,
+            font_size=node_text_size,
+            font_family=text_font,
+            ax=ax
+        )
+        nx.draw_networkx_edges(
+            graph, pos=pos, width=edge_tickness,
+            alpha=edge_alpha, edge_color=edge_color,
+            ax=ax
+        )
+        nx.draw_networkx_edge_labels(
+            graph, pos=pos, edge_labels=edge_labels,
+            ax=ax
+        )
         ax.legend([plt.Line2D([0], [0], linestyle="none", marker="o",
                               alpha=node_alpha,
                               markersize=10, markerfacecolor=color)
-                   for color in legend_colors],
-                   node_colors, loc=(-0.25, 1), numpoints=1, frameon=False)
+                  for color in legend_colors],
+                  node_colors, loc=(-0.25, 1), numpoints=1, frameon=False)
         ax.set_axis_off()
         return graph, ax, nodes
 
@@ -261,14 +319,11 @@ class ResultSet(list, ColumnGuesserMixin):
         rightmost column (numerical values required).
         All other columns are used to label the pie slices.
 
-        Parameters
-        ----------
-        key_word_sep: string used to separate column values
-                      from each other in pie labels
-        title: Plot title, defaults to name of value column
-
-        Any additional keyword arguments will be passsed
-        through to ``matplotlib.pylab.pie``.
+        :param key_word_sep: string used to separate column values
+                             from each other in pie labels
+        :param title: plot title, defaults to name of value column
+        :kwargs: any additional keyword arguments will be passsed
+            through to ``matplotlib.pylab.pie``.
         """
         if not plt:
             raise ImportError("Try installing matplotlib first.")
@@ -288,9 +343,7 @@ class ResultSet(list, ColumnGuesserMixin):
         The first and last columns are taken as the X and Y
         values.  Any columns between are ignored.
 
-        Parameters
-        ----------
-        title: Plot title, defaults to names of Y value columns
+        :param title: plot title, defaults to names of Y value columns
 
         Any additional keyword arguments will be passsed
         through to ``matplotlib.pylab.plot``.
@@ -319,11 +372,9 @@ class ResultSet(list, ColumnGuesserMixin):
         The last quantitative column is taken as the Y values;
         all other columns are combined to label the X axis.
 
-        Parameters
-        ----------
-        title: Plot title, defaults to names of Y value columns
-        key_word_sep: string used to separate column values
-                      from each other in labels
+        :param title: plot title, defaults to names of Y value columns
+        :param key_word_sep: string used to separate column values
+                             from each other in labels
 
         Any additional keyword arguments will be passsed
         through to ``matplotlib.pylab.bar``.
@@ -340,8 +391,14 @@ class ResultSet(list, ColumnGuesserMixin):
         return plot
 
     def csv(self, filename=None, **format_params):
-        """Generate results in comma-separated form.  Write to ``filename``
-        if given. Any other parameterw will be passed on to csv.writer."""
+        """Generates results in comma-separated form.  Write to ``filename``
+        if given. Any other parameter will be passed on to ``csv.writer``.
+
+        :param filename: if given, the CSV will be written to filename.
+
+        Any additional keyword arguments will be passsed
+        through to ``csv.writer``.
+        """
         if not self.pretty:
             return None  # no results
         if filename:
@@ -360,6 +417,12 @@ class ResultSet(list, ColumnGuesserMixin):
 
 
 def interpret_stats(results):
+    """Generates the string to be shown as updates after the execution of a
+    Cypher query
+
+    :param results: ``ResultSet`` with the raw results of the execution of
+                    the Cypher query
+    """
     stats = results.stats
     contains_updates = stats.pop("contains_updates", False)
     if not contains_updates:
@@ -374,6 +437,11 @@ def interpret_stats(results):
 
 
 def extract_params_from_query(query, user_ns):
+    """Generates a dictionary with safe keys and values to pass onto Neo4j
+
+    :param query: string with the Cypher query to execute
+    :param user_ns: dictionary with the IPython user space
+    """
     # TODO: Optmize this function
     params = {}
     for k, v in user_ns.iteritems():
@@ -386,6 +454,15 @@ def extract_params_from_query(query, user_ns):
 
 
 def run(conn, query, config, user_namespace):
+    """Executes a query and depending on the options of the extensions will
+    return raw data, a ``ResultSet``, a Pandas `DataFrame` or a NetworkX graph.
+
+    Parameters
+    :param conn: connection dictionary for the Neo4j backend
+    :param query: string with the Cypher query
+    :param config: dictionary with extra configuration details
+    :param user_namespace: dictionary with the IPython user space
+    """
     if query.strip():
         # TODO: Handle multiple queries
         params = extract_params_from_query(query, user_namespace)
@@ -395,13 +472,12 @@ def run(conn, query, config, user_namespace):
             print(interpret_stats(result))
         resultset = ResultSet(result, query, config)
         if config.auto_pandas:
-            return resultset.dataframe()
+            return resultset.get_dataframe()
         elif config.auto_networkx:
-            graph = resultset.graph()
+            graph = resultset.get_graph()
             resultset.draw()
             return graph
         else:
-            return resultset
-        #returning only last result, intentionally
+            return resultset  # returning only last result, intentionally
     else:
         return 'Connected: %s' % conn.name
