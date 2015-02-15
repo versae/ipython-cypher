@@ -1,3 +1,6 @@
+API
+===
+
 :mod:`cypher` Package
 -------------------------
 
@@ -5,6 +8,7 @@
     :members:
     :undoc-members:
     :show-inheritance:
+
 
 :mod:`run` Module
 -----------------
@@ -23,6 +27,7 @@
     :undoc-members:
     :show-inheritance:
 
+
 :mod:`column_guesser` Module
 ----------------------------
 
@@ -30,6 +35,7 @@
     :members:
     :undoc-members:
     :show-inheritance:
+
 
 :mod:`parse` Module
 -------------------
@@ -39,13 +45,6 @@
     :undoc-members:
     :show-inheritance:
 
-:mod:`utils` Module
--------------------
-
-.. automodule:: cypher.utils
-    :members:
-    :undoc-members:
-    :show-inheritance:
 
 :mod:`connection` Module
 ------------------------

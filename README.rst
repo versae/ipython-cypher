@@ -4,46 +4,58 @@ ipython-cypher
 
 :Author: Javier de la Rosa, http://versae.es
 
-Introduces a %cypher (or %%cypher) magic for Neo4j in IPython.
+Introduces a ``%cypher`` (and ``%%cypher``) magic for Neo4j in IPython.
 Inspired by Catherine Devlin's ipython-sql_.
 
-Connect to a graph database, using neo4jrestclient_ driver, then issue Cypher
+Connect to a graph database, using ``neo4jrestclient_`` driver, then issue Cypher
 commands within IPython or IPython Notebook. See examples_.
 
 Install
 -------
+As easy as usual::
 
     pip install ipython-cypher
 
-Then open an IPython or IPython Notebook and load the module
+Usage
+-----
+
+Inside IPython, load the extension::
 
     %load_ext cypher
 
-By default, it will connect to `http://localhost:7474/db/data`
+And then you are reay to go by using the ``%cypher`` cell magic::
+
+    %cypher MATCH (a)-[]-(b) RETURN a, b
+
+Some Cypher queries can be very long, in those cases the the line magic,
+``%%cypher`` comes in handy::
 
     %%cypher
-    match (n) return id(n) as id, n.name as name skip 1 limit 3
+    create
+        // Nodes
+        (Neo:Crew {name:'Neo'}),
+        (Morpheus:Crew {name: 'Morpheus'}),
+        (Trinity:Crew {name: 'Trinity'}),
+        // Relationships
+        (Neo)-[:KNOWS]->(Morpheus),
+        (Neo)-[:LOVES]->(Trinity),
+
+Note that by default ``ipython-cypher`` will connect to ``http://localhost:7474/db/data``.
+
+Queries results can be stored in a variable and then converted to a Pandas
+``DataFrame``::
+
+    results = %cypher MATCH (a)-[]-(b) RETURN a, b
+    results.get_dataframe()
+
+Or to a NetworkX ``DiGraph``::
+
+    results.get_graph()
+
+More more detailed descriptions, please visit the official documentation_.
 
 
-    %cypher match (n) return id(n) as id, n.name as name skip 1 limit 3
-
-    results = %cypher match (n) return id(n) as id, n.name as name skip 1 limit 3
-    results.dataframe()
-
-    results.pie()
-
-More soon...
-
-
-Credits
--------
-- Distribute_
-- Buildout_
-- modern-package-template_
-
-.. _Distribute: http://pypi.python.org/pypi/distribute
-.. _Buildout: http://www.buildout.org/
-.. _modern-package-template: http://pypi.python.org/pypi/modern-package-template
-.. _ipython-sql: https://github.com/catherinedevlin/ipython-sql
 .. _examples: http://nbviewer.ipython.org/github/versae/ipython-cypher/blob/master/src/examples.ipynb
 .. _neo4jrestclient: https://pypi.python.org/pypi/neo4jrestclient
+.. _documentation: http://ipython-cypher.readthedocs.org/en/latest/
+.. _ipython-sql: https://github.com/catherinedevlin/ipython-sql

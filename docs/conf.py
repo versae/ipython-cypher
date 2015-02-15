@@ -115,6 +115,7 @@ html_theme = 'alabaster'
 # documentation.
 html_theme_options = {
     'logo': 'logo.png',
+    'logo_text_align': 'left',
     'github_user': 'versae',
     'github_repo': 'ipython-cypher',
 }
@@ -259,7 +260,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'IPythonCypher', u'IPython Cypher Documentation',
-   u'Javier de la Rosa', 'IPythonCypher', 'One line description of project.',
+   u'Javier de la Rosa', 'IPythonCypher', 'IPython Extension for Neo4j Cypher.',
    'Miscellaneous'),
 ]
 
