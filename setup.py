@@ -6,7 +6,7 @@ README = open(os.path.join(here, 'README.rst')).read()
 NEWS = open(os.path.join(here, 'NEWS.txt')).read()
 
 
-version = '0.1.0'
+version = '0.2.0'
 
 install_requires = [
     'neo4jrestclient>=2.1.0',
@@ -29,7 +29,7 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 2',
     ],
-    keywords='ipython neo4j cypher pandas neo4jrestclient',
+    keywords='ipython neo4j cypher pandas networkx neo4jrestclient',
     author='Javier de la Rosa',
     author_email='versae@gmail.com',
     url='https://github.com/versae/ipython-cypher',
