@@ -15,6 +15,7 @@ from neo4jrestclient.exceptions import StatusException
 from cypher.connection import Connection
 from cypher.parse import parse
 from cypher.run import run
+from cypher.utils import defaults
 
 
 @magics_class
@@ -23,36 +24,38 @@ class CypherMagic(Magics, Configurable):
 
     Provides the %%cypher magic."""
 
-    auto_limit = Int(0, config=True, help="""
+    auto_limit = Int(defaults.auto_limit, config=True, help="""
         Automatically limit the size of the returned result sets
     """)
-    style = Unicode('DEFAULT', config=True, help="""
+    style = Unicode('defaults.style', config=True, help="""
         Set the table printing style to any of prettytable's defined styles
         (currently DEFAULT, MSWORD_FRIENDLY, PLAIN_COLUMNS, RANDOM)
     """)
-    short_errors = Bool(True, config=True, help="""
+    short_errors = Bool(defaults.short_errors, config=True, help="""
         Don't display the full traceback on Neo4j errors
     """)
-    data_contents = Bool(True, config=True, help="""
+    data_contents = Bool(defaults.data_contents, config=True, help="""
         Bring extra data to render the results as a graph
     """)
-    display_limit = Int(0, config=True, help="""
+    display_limit = Int(defaults.display_limit, config=True, help="""
         Automatically limit the number of rows displayed
         (full result set is still stored)
     """)
-    auto_pandas = Bool(False, config=True, help="""
+    auto_pandas = Bool(defaults.auto_pandas, config=True, help="""
         Return Pandas DataFrame instead of regular result sets
     """)
-    auto_html = Bool(False, config=True, help="""
+    auto_html = Bool(defaults.auto_html, config=True, help="""
         Return a D3 representation of the graph instead of regular result sets
     """)
-    auto_networkx = Bool(False, config=True, help="""
+    auto_networkx = Bool(defaults.auto_networkx, config=True, help="""
         Return Networkx MultiDiGraph instead of regular result sets
     """)
-    rest = Bool(False, config=True, help="""
+    rest = Bool(defaults.rest, config=True, help="""
         Return full REST representations of objects inside the result sets
     """)
-    feedback = Bool(True, config=True, help="Print number of rows affected")
+    feedback = Bool(defaults.feedback, config=True, help="""
+        Print number of rows affected
+    """)
 
     def __init__(self, shell):
         Configurable.__init__(self, config=shell.config)
@@ -99,7 +102,7 @@ class CypherMagic(Magics, Configurable):
         if first_word and first_word[0].lower() == 'persist':
             return self._persist_dataframe(parsed['cypher'], conn, user_ns)
         try:
-            result = run(conn, parsed['cypher'], self, user_ns)
+            result = run(parsed['cypher'], user_ns, self, conn)
             return result
         except StatusException as e:
             if self.short_errors:

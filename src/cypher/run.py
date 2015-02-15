@@ -23,7 +23,10 @@ except ImportError:
     pd = None
 
 from cypher.column_guesser import ColumnGuesserMixin
-from cypher.utils import StringIO
+from cypher.connection import Connection
+from cypher.utils import (
+    DefaultConfigurable, DEFAULT_URI, DEFAULT_CONFIGURABLE, StringIO
+)
 
 
 def unduplicate_field_names(field_names):
@@ -453,19 +456,28 @@ def extract_params_from_query(query, user_ns):
     return params
 
 
-def run(conn, query, config, user_namespace):
+def run(query, params, config=None, conn=None, **kwargs):
     """Executes a query and depending on the options of the extensions will
     return raw data, a ``ResultSet``, a Pandas `DataFrame` or a NetworkX graph.
 
-    Parameters
-    :param conn: connection dictionary for the Neo4j backend
     :param query: string with the Cypher query
-    :param config: dictionary with extra configuration details
-    :param user_namespace: dictionary with the IPython user space
+    :param params: dictionary with parameters for the query
+    :param config: Configurable or NamedTuple with extra IPython configuration
+                   details. If ``None``, a new object will be created
+                   (defaults=`None`)
+    :param conn: connection dictionary or string for the Neo4j backend.
+                 If `None`, a new connection will be created (default=`None`)
+    :param **kwargs: Any of the cell configuration options.
     """
+    if conn is None:
+        conn = Connection.get(DEFAULT_URI)
+    if config is None:
+        default_config = DEFAULT_CONFIGURABLE.copy
+        kwargs.update(default_config)
+        config = DefaultConfigurable(kwargs)
     if query.strip():
         # TODO: Handle multiple queries
-        params = extract_params_from_query(query, user_namespace)
+        params = extract_params_from_query(query, params)
         result = conn.session.query(query, params,
                                     data_contents=config.data_contents)
         if config.feedback:

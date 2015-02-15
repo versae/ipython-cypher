@@ -1,7 +1,8 @@
+from cypher.utils import DEFAULT_URI
 
 
 def parse(cell, config):
-    uri = 'http://localhost:7474/db/data/'
+    uri = DEFAULT_URI
     parts = [part.strip() for part in cell.split(None, 1)]
     if not parts:
         return {'uri': uri, 'cypher': ''}

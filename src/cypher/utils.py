@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from collections import namedtuple
 import sys
 
 
@@ -16,3 +17,23 @@ else:
     text_type = str
     string_types = (str, )
 
+DEFAULT_URI = 'http://localhost:7474/db/data/'
+DEFAULT_CONFIGURABLE = {
+    "auto_limit": 0,
+    "style": 'DEFAULT',
+    "short_errors": True,
+    "data_contents": True,
+    "display_limit": 0,
+    "auto_pandas": False,
+    "auto_html": False,
+    "auto_networkx": False,
+    "rest": False,
+    "feedback": True,
+}
+
+DefaultConfigurable = namedtuple(
+    "DefaultConfigurable",
+    ", ".join([k for k in DEFAULT_CONFIGURABLE.keys()])
+)
+
+defaults = DefaultConfigurable(**DEFAULT_CONFIGURABLE)
