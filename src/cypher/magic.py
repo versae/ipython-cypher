@@ -27,7 +27,7 @@ class CypherMagic(Magics, Configurable):
     auto_limit = Int(defaults.auto_limit, config=True, help="""
         Automatically limit the size of the returned result sets
     """)
-    style = Unicode('defaults.style', config=True, help="""
+    style = Unicode(defaults.style, config=True, help="""
         Set the table printing style to any of prettytable's defined styles
         (currently DEFAULT, MSWORD_FRIENDLY, PLAIN_COLUMNS, RANDOM)
     """)

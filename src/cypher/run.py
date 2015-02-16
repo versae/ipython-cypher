@@ -102,6 +102,8 @@ class ResultSet(list, ColumnGuesserMixin):
         self._results = results
         self._labels = defaultdict(int)
         self._types = defaultdict(int)
+        self._graph = None
+        self._dataframe = None
         self.keys = results.columns
         self.query = query
         self.config = config
@@ -169,6 +171,12 @@ class ResultSet(list, ColumnGuesserMixin):
         frame = pd.DataFrame(self[:], columns=(self and self.keys) or [])
         return frame
 
+    def _get_dataframe(self):
+        if self._dataframe is None:
+            self._dataframe = self.get_dataframe()
+        return self._dataframe
+    dataframe = property(_get_dataframe)
+
     def get_graph(self, directed=True):
         """Returns a NetworkX multi-graph instance built from the result set
 
@@ -189,6 +197,12 @@ class ResultSet(list, ColumnGuesserMixin):
                 graph.add_edge(rel['startNode'], rel['endNode'], rel['id'],
                                rel['properties'], type=rel['type'])
         return graph
+
+    def _get_graph(self):
+        if self._graph is None:
+            self._graph = self.get_graph()
+        return self._graph
+    graph = property(_get_graph)
 
     def draw(self, directed=True, layout="spring",
              node_label_attr=None, show_node_labels=True,
@@ -244,7 +258,7 @@ class ResultSet(list, ColumnGuesserMixin):
 
         :return: a ``matplotlib.Figure`` with the graph rendered.
         """
-        graph = self.graph(directed=directed)
+        graph = self.get_graph(directed=directed)
         pos = getattr(nx, "{}_layout".format(layout))(graph)
         node_labels = {}
         edge_labels = {}
@@ -456,12 +470,12 @@ def extract_params_from_query(query, user_ns):
     return params
 
 
-def run(query, params, config=None, conn=None, **kwargs):
+def run(query, params=None, config=None, conn=None, **kwargs):
     """Executes a query and depending on the options of the extensions will
     return raw data, a ``ResultSet``, a Pandas `DataFrame` or a NetworkX graph.
 
     :param query: string with the Cypher query
-    :param params: dictionary with parameters for the query
+    :param params: dictionary with parameters for the query (default=`None`)
     :param config: Configurable or NamedTuple with extra IPython configuration
                    details. If ``None``, a new object will be created
                    (defaults=`None`)
@@ -469,12 +483,14 @@ def run(query, params, config=None, conn=None, **kwargs):
                  If `None`, a new connection will be created (default=`None`)
     :param **kwargs: Any of the cell configuration options.
     """
+    if params is None:
+        params = {}
     if conn is None:
         conn = Connection.get(DEFAULT_URI)
     if config is None:
-        default_config = DEFAULT_CONFIGURABLE.copy
+        default_config = DEFAULT_CONFIGURABLE.copy()
         kwargs.update(default_config)
-        config = DefaultConfigurable(kwargs)
+        config = DefaultConfigurable(**kwargs)
     if query.strip():
         # TODO: Handle multiple queries
         params = extract_params_from_query(query, params)
