@@ -15,13 +15,17 @@ class Connection(object):
             "or one of %s"
         ) % str(cls.connections.keys())
 
-    def __init__(self, connect_str=None):
+    def __init__(self, connect_str=None, alias=None):
         try:
-            gdb = GraphDatabase(connect_str)
+            if connect_str in self.connections:
+                gdb = GraphDatabase(self.connections[connect_str])
+            else:
+                gdb = GraphDatabase(connect_str)
+                alias = connect_str
         except:
             print(self.tell_format())
             raise
-        self.name = self.assign_name(gdb)
+        self.name = alias or self.assign_name(gdb)
         self.session = gdb
         self.connections[self.name] = self
         self.connections[gdb.url] = self

@@ -97,7 +97,7 @@ class CypherMagic(Magics, Configurable):
         user_ns = self.shell.user_ns
         user_ns.update(local_ns)
         parsed = parse("""{0}\n{1}""".format(line, cell), self)
-        conn = Connection.get(parsed['uri'])
+        conn = Connection.get(parsed['as'] or parsed['uri'])
         first_word = parsed['cypher'].split(None, 1)[:1]
         if first_word and first_word[0].lower() == 'persist':
             return self._persist_dataframe(parsed['cypher'], conn, user_ns)
