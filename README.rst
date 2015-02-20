@@ -55,7 +55,7 @@ Or to a NetworkX ``MultiDiGraph``::
 For more detailed descriptions, please visit the official documentation_.
 
 
-.. _examples: http://nbviewer.ipython.org/github/versae/ipython-cypher/blob/master/src/examples.ipynb
+.. _examples: http://nbviewer.ipython.org/github/versae/ipython-cypher/blob/master/docs/examples.ipynb
 .. _neo4jrestclient: https://pypi.python.org/pypi/neo4jrestclient
 .. _documentation: http://ipython-cypher.readthedocs.org/en/latest/
 .. _ipython-sql: https://github.com/catherinedevlin/ipython-sql
