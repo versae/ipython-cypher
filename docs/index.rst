@@ -103,5 +103,5 @@ Indices and tables
 .. _Pandas: http://pandas.pydata.org/pandas-docs/dev/
 .. _NetworkX: https://networkx.github.io/
 .. _matplotlib: http://matplotlib.org/
-.. _IPython Notebook: http://nbviewer.ipython.org/github/versae/ipython-cypher/blob/master/src/examples.ipynb
+.. _IPython Notebook: http://nbviewer.ipython.org/github/versae/ipython-cypher/blob/master/docs/examples.ipynb
 .. _`ipython-sql`: https://github.com/catherinedevlin/ipython-sql
