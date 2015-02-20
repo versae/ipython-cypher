@@ -77,13 +77,13 @@ Results can be converted to a Pandas ``DataFrame`` by calling the funcion ``get_
     results.get_dataframe()
 
 The same can be achieved by using the lazy loading property ``.dataframe``, but
-in this case default values for the creation of the ``DataFrame`` will be used.
+in this case default values for the creation of the ``DataFrame`` will be used::
 
     results.dataframe
 
 And the same applies for NetworkX ``MultiDiGraph``. By default it will create
 a ``MultiDiGraph``, but some options, such as if the graph should be directed or
-not, can be passed.
+not, can be passed::
 
     results.get_graph()
     results.graph
@@ -96,11 +96,11 @@ Plotting
 ========
 However, we don't always need the full power of Pandas when we just want to take
 a quick look at the data. For those use cases, and if ``matplotlib`` is installed,
-``ipython-cypher`` includes several handy functions::
+``ipython-cypher`` includes several handy functions:
+
 - ``.bar()``, will plot a bar chart trying its bets guesses.
 - ``.pie()``, the same for pie charts.
-- ``.plot()``, with the deafault ``matplotlib`` line bar, but supporint the
-passing of any keyword argument to the ``matplotlib.plot`` function.
+- ``.plot()``, with the deafault ``matplotlib`` line bar, but supporint the passing of any keyword argument to the ``matplotlib.plot`` function.
 - ``.draw()``, will try to draw a simple NetworkX graph if the package is installed.
 
 Dump
@@ -117,25 +117,25 @@ The next parameters can set by using IPython Notebook config system, ``CypherMag
 passing arguments to the ``run()`` function when using ``ipython-cypher`` outside of
 IPython.
 
-- ``auto_html``, ``<bool>``.
+- ``auto_html (<bool>)``.
     Return a D3 representation of the graph instead of regular result sets (default: ``False``).
-- ``auto_limit``, ``<int>``.
+- ``auto_limit (<int>)``.
     Automatically limit the size of the returned result sets (default: ``0``).
-- ``auto_networkx``, ``<bool>``.
+- ``auto_networkx (<bool>)``.
     Return NetworkX MultiDiGraph instead of regular result sets (default: ``False``).
-- ``auto_pandas``, ``<bool>``.
+- ``auto_pandas (<bool>)``.
     Return Pandas DataFrame instead of regular result sets (default: ``False``).
-- ``data_contents``, ``<bool>``.
+- ``data_contents (<bool>)``.
     Bring extra data to render the results as a graph (default: ``True``).
-- ``display_limit``, ``<int>``.
+- ``display_limit (<int>)``.
     Automatically limit the number of rows displayed (full result set is still stored, default: ``0``).
-- ``feedback``, ``<bool>``.
+- ``feedback (<bool>)``.
     Print number of rows affected (default: ``True``).
-- ``rest``, ``<bool>``.
+- ``rest (<bool>)``.
     Return full REST representations of objects inside the result sets (default: ``False``).
-- ``short_errors``, ``<bool>``.
+- ``short_errors (<bool>)``.
     Don't display the full traceback on Neo4j errors (default: ``True``).
-- ``style``, ``<unicode>``.
+- ``style (<unicode>)``.
     Set the table printing style to any of prettytable's defined styles
     (currently ``DEFAULT``, ``MSWORD_FRIENDLY``, ``PLAIN_COLUMNS``, ``RANDOM``, default: ``u'DEFAULT'``).
 

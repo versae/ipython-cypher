@@ -4,7 +4,7 @@ News
 0.2.0
 -----
 
-*Release date: 15-Feb-2015*
+*Release date: 20-Feb-2015*
 
 * Added documentation.
 * Added option to run Cypher queries outside IPython

@@ -14,11 +14,12 @@ install_requires = [
     'ipython>=1.0',
 ]
 
-
+description = ("Neo4j Cypher cell and line magic for IPython, "
+               "Pandas, NetworkX and matplotlib",
 setup(
     name='ipython-cypher',
     version=version,
-    description="Neo4j Cypher cell magic for IPython and Pandas",
+    description=description,
     long_description=README + '\n\n' + NEWS,
     classifiers=[
         'Development Status :: 3 - Alpha',

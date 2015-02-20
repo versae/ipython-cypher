@@ -23,11 +23,11 @@ Inside IPython, load the extension::
 
     %load_ext cypher
 
-And then you are reay to go by using the ``%cypher`` cell magic::
+And then you are reay to go by using the ``%cypher`` line magic::
 
     %cypher MATCH (a)-[]-(b) RETURN a, b
 
-Some Cypher queries can be very long, in those cases the the line magic,
+Some Cypher queries can be very long, in those cases the the cell magic,
 ``%%cypher`` comes in handy::
 
     %%cypher
@@ -48,11 +48,11 @@ Queries results can be stored in a variable and then converted to a Pandas
     results = %cypher MATCH (a)-[]-(b) RETURN a, b
     results.get_dataframe()
 
-Or to a NetworkX ``DiGraph``::
+Or to a NetworkX ``MultiDiGraph``::
 
     results.get_graph()
 
-More more detailed descriptions, please visit the official documentation_.
+For more detailed descriptions, please visit the official documentation_.
 
 
 .. _examples: http://nbviewer.ipython.org/github/versae/ipython-cypher/blob/master/src/examples.ipynb
