@@ -1,6 +1,14 @@
 News
 ====
 
+0.2.2
+-----
+
+*Release date: 22-Apr-2015*
+
+* Fixed error with `conn` when executing Cypher outside of IPython.
+
+
 0.2.0
 -----
 

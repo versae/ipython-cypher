@@ -15,7 +15,7 @@ This work is inspired by Catherine Devlin's `ipython-sql`_.
 
 Releases
 ========
-The latest release of ``ipython-cypher`` is **0.2.0**.
+The latest release of ``ipython-cypher`` is **0.2.2**.
 
 
 Requirements

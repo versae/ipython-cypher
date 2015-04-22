@@ -487,6 +487,8 @@ def run(query, params=None, config=None, conn=None, **kwargs):
         params = {}
     if conn is None:
         conn = Connection.get(DEFAULT_URI)
+    else:
+        conn = Connection.get(conn)
     if config is None:
         default_config = DEFAULT_CONFIGURABLE.copy()
         kwargs.update(default_config)
