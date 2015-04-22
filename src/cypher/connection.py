@@ -10,7 +10,6 @@ class Connection(object):
 
     @classmethod
     def tell_format(cls):
-        import ipdb; ipdb.set_trace()
         message = ("Format: "
                    "(http|https)://username:password@hostname:port/db/name")
         connetions_keys = ", ".join(set(cls.connections.keys()))
