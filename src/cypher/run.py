@@ -25,7 +25,8 @@ except ImportError:
 from cypher.column_guesser import ColumnGuesserMixin
 from cypher.connection import Connection
 from cypher.utils import (
-    DefaultConfigurable, DEFAULT_URI, DEFAULT_CONFIGURABLE, StringIO
+    DefaultConfigurable, DEFAULT_URI, DEFAULT_CONFIGURABLE, StringIO,
+    string_types
 )
 
 
@@ -472,22 +473,24 @@ def extract_params_from_query(query, user_ns):
 
 def run(query, params=None, config=None, conn=None, **kwargs):
     """Executes a query and depending on the options of the extensions will
-    return raw data, a ``ResultSet``, a Pandas `DataFrame` or a NetworkX graph.
+    return raw data, a ``ResultSet``, a Pandas ``DataFrame`` or a
+    NetworkX graph.
 
     :param query: string with the Cypher query
-    :param params: dictionary with parameters for the query (default=`None`)
+    :param params: dictionary with parameters for the query (default=``None``)
     :param config: Configurable or NamedTuple with extra IPython configuration
                    details. If ``None``, a new object will be created
-                   (defaults=`None`)
+                   (defaults=``None``)
     :param conn: connection dictionary or string for the Neo4j backend.
-                 If `None`, a new connection will be created (default=`None`)
+                 If ``None``, a new connection will be created
+                 (default=``None``)
     :param **kwargs: Any of the cell configuration options.
     """
     if params is None:
         params = {}
     if conn is None:
         conn = Connection.get(DEFAULT_URI)
-    else:
+    elif isinstance(conn, string_types):
         conn = Connection.get(conn)
     if config is None:
         default_config = DEFAULT_CONFIGURABLE.copy()
