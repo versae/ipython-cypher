@@ -10,10 +10,14 @@ class Connection(object):
 
     @classmethod
     def tell_format(cls):
-        return (
-            "Format: (http|https)://username:password@hostname:port/db/name, "
-            "or one of %s"
-        ) % str(cls.connections.keys())
+        import ipdb; ipdb.set_trace()
+        message = ("Format: "
+                   "(http|https)://username:password@hostname:port/db/name")
+        connetions_keys = ", ".join(set(cls.connections.keys()))
+        if connetions_keys:
+            return "{}, or one of {}".format(message, connetions_keys)
+        else:
+            return message
 
     def __init__(self, connect_str=None, alias=None):
         try:
