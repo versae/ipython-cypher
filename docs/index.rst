@@ -83,6 +83,19 @@ Or to a NetworkX ``MultiDiGraph``::
 
 See real examples in an `IPython Notebook`_.
 
+Configuration
+=============
+
+To change the behaviour of the cypher magic function, you can configure it::
+
+    %config CypherMagic
+
+    ... list of options
+
+    %config CypherMagic.some_option = new_value
+
+
+
 Contents
 ========
 

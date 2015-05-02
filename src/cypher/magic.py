@@ -56,6 +56,9 @@ class CypherMagic(Magics, Configurable):
     feedback = Bool(defaults.feedback, config=True, help="""
         Print number of rows affected
     """)
+    uri = Unicode(defaults.uri, config=True, help="""
+        Default database URL if none is defined inline
+    """)
 
     def __init__(self, shell):
         Configurable.__init__(self, config=shell.config)

@@ -1,12 +1,9 @@
 import os
 
-from cypher.utils import DEFAULT_URI
-
-
 def parse(cell, config):
     uri = (os.environ.get("NEO4J_URI")
            or os.environ.get("NEO4J_URL")
-           or DEFAULT_URI)
+           or config.uri)
     uri_as = ""
     parts = [part.strip() for part in cell.split(None, 1)]
     if not parts:
