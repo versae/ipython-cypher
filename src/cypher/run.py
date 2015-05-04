@@ -25,7 +25,7 @@ except ImportError:
 from cypher.column_guesser import ColumnGuesserMixin
 from cypher.connection import Connection
 from cypher.utils import (
-    DefaultConfigurable, DEFAULT_URI, DEFAULT_CONFIGURABLE, StringIO,
+    DefaultConfigurable, DEFAULT_CONFIGURABLE, StringIO,
     string_types
 )
 
@@ -489,7 +489,7 @@ def run(query, params=None, config=None, conn=None, **kwargs):
     if params is None:
         params = {}
     if conn is None:
-        conn = Connection.get(DEFAULT_URI)
+        conn = Connection.get(DEFAULT_CONFIGURABLE["uri"])
     elif isinstance(conn, string_types):
         conn = Connection.get(conn)
     if config is None:

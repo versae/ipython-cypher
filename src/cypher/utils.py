@@ -17,7 +17,6 @@ else:
     text_type = str
     string_types = (str, )
 
-DEFAULT_URI = 'http://localhost:7474/db/data/'
 DEFAULT_CONFIGURABLE = {
     "auto_limit": 0,
     "style": 'DEFAULT',
@@ -29,6 +28,7 @@ DEFAULT_CONFIGURABLE = {
     "auto_networkx": False,
     "rest": False,
     "feedback": True,
+    "uri": 'http://localhost:7474/db/data/',
 }
 
 DefaultConfigurable = namedtuple(
