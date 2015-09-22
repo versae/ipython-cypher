@@ -1,6 +1,7 @@
 import codecs
 from collections import defaultdict
 import csv
+from functools import reduce
 import json
 import prettytable
 import operator
@@ -25,7 +26,7 @@ except ImportError:
 from cypher.column_guesser import ColumnGuesserMixin
 from cypher.connection import Connection
 from cypher.utils import (
-    DefaultConfigurable, DEFAULT_CONFIGURABLE, StringIO,
+    DefaultConfigurable, DEFAULT_CONFIGURABLE, PY2, StringIO,
     string_types
 )
 
@@ -58,15 +59,16 @@ class UnicodeWriter(object):
 
     def writerow(self, row):
         _row = [s.encode("utf-8")
-                if hasattr(s, "encode")
+                if PY2
                 else s
                 for s in row]
         self.writer.writerow(_row)
         # Fetch UTF-8 output from the queue ...
         data = self.queue.getvalue()
-        data = data.decode("utf-8")
-        # ... and reencode it into the target encoding
-        data = self.encoder.encode(data)
+        if PY2:
+            data = data.decode("utf-8")
+            # ... and reencode it into the target encoding
+            data = self.encoder.encode(data)
         # write to the target stream
         self.stream.write(data)
         # empty queue
@@ -111,16 +113,20 @@ class ResultSet(list, ColumnGuesserMixin):
         self.limit = config.auto_limit
         style_name = config.style
         self.style = prettytable.__dict__[style_name.upper()]
-        if len(results) > 0:
+        if results is not None:
             if not config.rest:
                 _results = results.rows
             else:
                 _results = results
+            _results = _results or []
             if self.limit:
                 list.__init__(self, _results[:self.limit])
             else:
                 list.__init__(self, _results)
-            self.field_names = unduplicate_field_names(self.keys)
+            if self.keys is not None:
+                self.field_names = unduplicate_field_names(self.keys)
+            else:
+                self.field_names = []
             self.pretty = prettytable.PrettyTable(self.field_names)
             if not config.auto_pandas:
                 for row in self[:config.display_limit or None]:
@@ -272,7 +278,7 @@ class ResultSet(list, ColumnGuesserMixin):
                 if node_label_attr is None:
                     node_labels[node] = "$:{}$\n{}".format(
                         ":".join(labels),
-                        props.values()[0] if props else "",
+                        next(iter(props.values())) if props else "",
                     )
                 else:
                     props_list = ["{}: {}".format(k, v)
@@ -283,7 +289,7 @@ class ResultSet(list, ColumnGuesserMixin):
         node_color = []
         node_colors = list(node_colors)
         legend_colors = []
-        colors = plt.matplotlib.colors.ColorConverter().cache.items()
+        colors = list(plt.matplotlib.colors.ColorConverter().cache.items())
         for color_name, color_rgb in colors[:len(node_colors)]:
             node_color.append(color_rgb)
             legend_colors.append(color_name)
@@ -442,7 +448,7 @@ def interpret_stats(results):
                     the Cypher query
     """
     stats = results.stats
-    contains_updates = stats.pop("contains_updates", False)
+    contains_updates = stats.pop("contains_updates", False) if stats else False
     if not contains_updates:
         result = '{} rows affected.'.format(len(results))
     else:
