@@ -1,14 +1,19 @@
 #!/usr/bin/env python
 import re
+
 from IPython.core.magic import (Magics, magics_class, cell_magic, line_magic,
                                 needs_local_scope)
-from IPython.config.configurable import Configurable
-from IPython.utils.traitlets import Bool, Int, Unicode
 try:
     from pandas.core.frame import DataFrame, Series
 except ImportError:
     DataFrame = None
     Series = None
+try:
+    from traitlets import Bool, Int, Unicode
+    from traitlets.config.configurable import Configurable
+except ImportError:
+    from IPython.config.configurable import Configurable
+    from IPython.utils.traitlets import Bool, Int, Unicode
 
 from neo4jrestclient.exceptions import StatusException
 
