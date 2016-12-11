@@ -15,13 +15,13 @@ This work is inspired by Catherine Devlin's `ipython-sql`_.
 
 Releases
 ========
-The latest release of ``ipython-cypher`` is **0.2.2**.
+The latest release of ``ipython-cypher`` is **0.2.4**.
 
 
 Requirements
 ============
 
-- Python 2.7, 3.3, 3.4
+- Python 2.7, 3.3, 3.4, 3.5
 - Neo4j 1.9, 2.0, 2.1, 2.2
 
 

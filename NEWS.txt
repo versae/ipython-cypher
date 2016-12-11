@@ -1,6 +1,21 @@
 News
 ====
 
+0.2.4
+-----
+
+*Release date: 10-Dec-2016*
+
+* Update imports.
+
+0.2.3
+-----
+
+*Release date: 22-Sep-2015*
+
+* Bugfixes for Python 3.
+
+
 0.2.2
 -----
 
