@@ -198,11 +198,16 @@ class ResultSet(list, ColumnGuesserMixin):
             graph = nx.MultiGraph()
         for item in self._results.graph:
             for node in item['nodes']:
-                graph.add_node(node['id'],
-                               **{**node['properties'], **{'labels': node['labels']}})
+                properties = node['properties'].copy()
+                properties['labels'] = node['labels']
+                graph.add_node(node['id'], properties)
             for rel in item['relationships']:
-                graph.add_edge(rel['startNode'], rel['endNode'],
-                               **{**rel['properties'], **{'id': rel['id'], 'type': rel['type']}})
+                properties = rel['properties']
+                properties.update(
+                    id=rel['id'],
+                    type=rel['type']
+                )
+                graph.add_edge(rel['startNode'], rel['endNode'], properties)
         return graph
 
     def _get_graph(self):
