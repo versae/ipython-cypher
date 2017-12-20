@@ -1,6 +1,13 @@
 News
 ====
 
+0.2.5
+-----
+
+*Release date: 20-Dec-2017*
+
+* Fix issue with newer versions of NetworkX.
+
 0.2.4
 -----
 

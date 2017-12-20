@@ -15,7 +15,7 @@ This work is inspired by Catherine Devlin's `ipython-sql`_.
 
 Releases
 ========
-The latest release of ``ipython-cypher`` is **0.2.4**.
+The latest release of ``ipython-cypher`` is **0.2.5**.
 
 
 Requirements
@@ -34,7 +34,7 @@ Depending on your needs, you might want to Pandas, NetworkX and/or matplotlib in
 minimum versions supported are detailed below.
 
 - Pandas 0.15
-- NetworkX 1.9
+- NetworkX 2.0
 - matplotlib 1.4
 
 
