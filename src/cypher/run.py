@@ -1,5 +1,6 @@
 import codecs
 from collections import defaultdict
+import copy
 import csv
 from functools import reduce
 import json
@@ -198,11 +199,11 @@ class ResultSet(list, ColumnGuesserMixin):
             graph = nx.MultiGraph()
         for item in self._results.graph:
             for node in item['nodes']:
-                properties = node['properties'].copy()
+                properties = copy.deepcopy(node['properties'])
                 properties['labels'] = node['labels']
                 graph.add_node(node['id'], properties)
             for rel in item['relationships']:
-                properties = rel['properties']
+                properties = copy.deepcopy(rel['properties'])
                 properties.update(
                     id=rel['id'],
                     type=rel['type']
