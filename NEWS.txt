@@ -1,6 +1,13 @@
 News
 ====
 
+0.2.6
+-----
+
+*Release date: 10-Jan-2018*
+
+* Fix issue with handling of connections aliases.
+
 0.2.5
 -----
 
