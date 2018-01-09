@@ -22,7 +22,8 @@ def parse(cell, config):
         else:
             query = ''
     elif '$' in parts[0]:
-        uri_as, query = parts
+        uri_as = parts[0][1:]
+        query = parts[1]
     else:
         query = cell
     return {'uri': uri.strip(),
