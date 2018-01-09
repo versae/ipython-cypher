@@ -24,7 +24,7 @@ class Connection(object):
                 gdb = GraphDatabase(self.connections[connect_str])
             else:
                 gdb = GraphDatabase(connect_str)
-                alias = connect_str
+                alias = alias or connect_str
         except:
             print(self.tell_format())
             raise

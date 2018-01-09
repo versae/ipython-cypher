@@ -7,15 +7,22 @@ def parse(cell, config):
     uri_as = ""
     parts = [part.strip() for part in cell.split(None, 1)]
     if not parts:
-        return {'uri': uri, 'cypher': ''}
-    elif ' as ' in parts[0]:
-        uri, uri_as = parts[0].split(' as ')
-    elif '@' in parts[0] or '://' in parts[0]:
+        return {'uri': uri, 'as': uri_as, 'cypher': ''}
+    if '@' in parts[0] or '://' in parts[0]:
         uri = parts[0]
         if len(parts) > 1:
-            query = parts[1]
+            if parts[1].startswith('as '):
+                uri_as_query = parts[1].split('as', 1)[-1].split(None, 1)
+                if len(uri_as_query) == 2:
+                    uri_as, query = uri_as_query
+                else:
+                    uri_as, query = uri_as_query[0], ''
+            else:
+                query = parts[1]
         else:
             query = ''
+    elif '$' in parts[0]:
+        uri_as, query = parts
     else:
         query = cell
     return {'uri': uri.strip(),
