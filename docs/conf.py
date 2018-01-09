@@ -54,7 +54,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'IPython Cypher'
-copyright = u'2015, Javier de la Rosa'
+copyright = u'2018, Javier de la Rosa'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

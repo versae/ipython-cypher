@@ -32,6 +32,9 @@
     CypherMagic.feedback=<Bool>
         Current: True
         Print number of rows affected
+    CypherMagic.uri=<Unicode>
+        Current: u'http://localhost:7474/db/data'
+        Default database URL if none is defined inline
     CypherMagic.rest=<Bool>
         Current: False
         Return full REST representations of objects inside the result sets

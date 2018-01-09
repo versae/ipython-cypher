@@ -15,7 +15,7 @@ This work is inspired by Catherine Devlin's `ipython-sql`_.
 
 Releases
 ========
-The latest release of ``ipython-cypher`` is **0.2.5**.
+The latest release of ``ipython-cypher`` is **0.2.6**.
 
 
 Requirements
@@ -29,8 +29,8 @@ Dependencies
 ============
 - neo4jrestclient 2.0
 
-Depending on your needs, you might want to Pandas, NetworkX and/or matplotlib in order for
-``ipython-cypher`` to produce adapted ouputs from Cypher queries. The
+Depending on your needs, you might want to install Pandas, NetworkX and/or matplotlib in order for
+``ipython-cypher`` to produce adapted outputs from Cypher queries. The
 minimum versions supported are detailed below.
 
 - Pandas 0.15
