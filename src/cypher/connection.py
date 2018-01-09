@@ -35,7 +35,7 @@ class Connection(object):
         Connection.current = self
 
     @classmethod
-    def get(cls, descriptor):
+    def get(cls, descriptor, alias=None):
         if isinstance(descriptor, Connection):
             cls.current = descriptor
         elif descriptor:
@@ -44,7 +44,7 @@ class Connection(object):
             if conn:
                 cls.current = conn
             else:
-                cls.current = Connection(descriptor)
+                cls.current = Connection(descriptor, alias)
         if cls.current:
             return cls.current
         else:
