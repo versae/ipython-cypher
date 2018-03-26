@@ -311,7 +311,7 @@ class ResultSet(list, ColumnGuesserMixin):
             fig = plt.figure()
             ax = fig.add_subplot(111)
         nodes = nx.draw_networkx_nodes(
-            graph, pos=pos,  node_color=node_color,
+            graph, pos=pos, node_color=node_color,
             node_size=node_size, alpha=node_alpha,
             ax=ax
         )

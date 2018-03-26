@@ -4,9 +4,10 @@ News
 0.2.6
 -----
 
-*Release date: 10-Jan-2018*
+*Release date: 25-Mar-2018*
 
 * Fix issue with handling of connections aliases.
+* Fix issue with NetworkX 2.x new syntax (node and edge properties, drawing).
 
 0.2.5
 -----
