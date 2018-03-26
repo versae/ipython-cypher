@@ -201,14 +201,15 @@ class ResultSet(list, ColumnGuesserMixin):
             for node in item['nodes']:
                 properties = copy.deepcopy(node['properties'])
                 properties['labels'] = node['labels']
-                graph.add_node(node['id'], properties)
+                graph.add_node(node['id'], **properties)
             for rel in item['relationships']:
                 properties = copy.deepcopy(rel['properties'])
                 properties.update(
                     id=rel['id'],
                     type=rel['type']
                 )
-                graph.add_edge(rel['startNode'], rel['endNode'], properties)
+                graph.add_edge(rel['startNode'], rel['endNode'],
+                               key=rel.get('type'), **properties)
         return graph
 
     def _get_graph(self):
@@ -295,10 +296,10 @@ class ResultSet(list, ColumnGuesserMixin):
         node_color = []
         node_colors = list(node_colors)
         legend_colors = []
-        colors = list(plt.matplotlib.colors.ColorConverter().cache.items())
-        for color_name, color_rgb in colors[:len(node_colors)]:
+        colors = list(plt.matplotlib.colors.ColorConverter().cache.items())[2:]
+        for _, color_rgb in colors[:len(node_colors)]:
             node_color.append(color_rgb)
-            legend_colors.append(color_name)
+            legend_colors.append(color_rgb)
         if show_edge_labels:
             for start, end, props in graph.edges(data=True):
                 if edge_label_attr is None:
@@ -310,7 +311,7 @@ class ResultSet(list, ColumnGuesserMixin):
             fig = plt.figure()
             ax = fig.add_subplot(111)
         nodes = nx.draw_networkx_nodes(
-            graph, pos=pos, node_color=node_color,
+            graph, pos=pos,  node_color=node_color,
             node_size=node_size, alpha=node_alpha,
             ax=ax
         )
