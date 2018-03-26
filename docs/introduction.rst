@@ -42,9 +42,9 @@ better::
     %%cypher https://long.host.ec2.machin.com:7474/db/data as test1
     match (n) return n limit 1
 
-Once is set, can be used as usual::
+Once is set, can be used by preceding the alias with the dollar sign::
 
-    %%cypher test1
+    %%cypher $test1
     match (n) return n limit 1
 
 In order to change the default connection string, the environment variables
@@ -131,6 +131,8 @@ IPython.
     Automatically limit the number of rows displayed (full result set is still stored, default: ``0``).
 - ``feedback (<bool>)``.
     Print number of rows affected (default: ``True``).
+- ``uri (<unicode>)``.
+    Default database URL if none is defined inline (default: ``http://localhost:7474/db/data/``).
 - ``rest (<bool>)``.
     Return full REST representations of objects inside the result sets (default: ``False``).
 - ``short_errors (<bool>)``.
